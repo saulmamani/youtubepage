@@ -7,27 +7,31 @@ use App\Patterns\FactoryPattern\IDataSource;
 use App\Patterns\FactoryPattern\LocalData;
 use App\Patterns\FactoryPattern\YoutubeData;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class VideoController extends Controller
 {
     protected IDataSource $source;
 
-    public function __construct()
-    {
-        $this->source = (CacheDateTime::isNecesaryRefreshFromYoutube()) ?
-            new YoutubeData() : new LocalData();
-    }
-
     public function search(Request $request)
     {
         $searchKey = "q";
         $searchValue = $request->input('query');
+        $keyCache = "{$searchKey}_{$searchValue}";
+
+        $this->source = $this->getDataSource($keyCache);
+
         return $this->source->getVideos($searchKey, $searchValue);
     }
 
-    public function channelVideos(Request $request){
+    public function channelVideos(Request $request)
+    {
         $searchKey = "channelId";
         $searchValue = $request->input('channelId');
+        $keyCache = "{$searchKey}_{$searchValue}";
+
+        $this->source = $this->getDataSource($keyCache);
+
         return $this->source->getVideos($searchKey, $searchValue);
     }
 
@@ -37,11 +41,11 @@ class VideoController extends Controller
         $searchValue = $request->input('channelId');
 
         $this->source = new YoutubeData();
-        $videos = $this->source->getVideos($searchKey, $searchValue);
+        return $this->source->getVideos($searchKey, $searchValue);
+    }
 
-        //TODO aqui actualizar la base de datos local
-        CacheDateTime::setDateToNextRefresh();
-
-        return $videos;
+    public function getDataSource(string $keyCache): IDataSource
+    {
+        return Cache::has($keyCache) ? new LocalData() : new YoutubeData();
     }
 }

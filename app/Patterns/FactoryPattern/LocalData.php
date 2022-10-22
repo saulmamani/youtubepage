@@ -2,13 +2,13 @@
 
 namespace App\Patterns\FactoryPattern;
 
+use Illuminate\Support\Facades\Cache;
+
 class LocalData implements IDataSource
 {
     public function getVideos($key, $q)
     {
-        //todo recoger datos del cache
-        //todo si devuelve vacio, llamar al api de youtube para que actualice
-
-       return ["get videos local data $key -> $q"];
+        $keyCache = "{$key}_{$q}";
+        return Cache::get($keyCache);
     }
 }

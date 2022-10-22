@@ -2,6 +2,8 @@
 
 namespace App\Patterns\FactoryPattern;
 
+use App\Patterns\EnvApp;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 class YoutubeData implements IDataSource
@@ -26,8 +28,11 @@ class YoutubeData implements IDataSource
         ];
 
         $response = $this->getHttp()->get("{$this->url}search", $params);
+        $listVideos = $this->mapResponse($response['items']);
 
-        return $this->mapResponse($response['items']);
+        $this->insertVideosInCache($key, $q, $listVideos);
+
+        return $listVideos;
     }
 
     private function getKindId($id1): array
@@ -52,14 +57,30 @@ class YoutubeData implements IDataSource
                 "image" => $item['snippet']['thumbnails']['medium']['url'],
                 'channelId' => $item['snippet']['channelId']
             ];
-
-            //todo, alimentar el cache
         };
         return $listVideos;
     }
 
-    public function playListVideos($id){}
-    public function videoDetail($id){}
-    public function comments($videoId){}
-    public function suggestedVideos($videoId){}
+    private function insertVideosInCache($key, $q, array $listVideos): void
+    {
+        $keyCache = "{$key}_{$q}";
+        Cache::forget($keyCache);
+        Cache::put("$keyCache", $listVideos, EnvApp::$TIME_IN_CACHE);
+    }
+
+    public function playListVideos($id)
+    {
+    }
+
+    public function videoDetail($id)
+    {
+    }
+
+    public function comments($videoId)
+    {
+    }
+
+    public function suggestedVideos($videoId)
+    {
+    }
 }
