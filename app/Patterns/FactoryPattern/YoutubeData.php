@@ -35,10 +35,10 @@ class YoutubeData implements IDataSource
         return $listVideos;
     }
 
-    private function getKindId($id1): array
+    private function getKindId($itemId): array
     {
-        $kind = explode("#", $id1['kind'])[1];
-        $id = $id1["{$kind}Id"];
+        $kind = explode("#", $itemId['kind'])[1];
+        $id = $itemId["{$kind}Id"];
         return array($kind, $id);
     }
 
