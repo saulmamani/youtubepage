@@ -53,6 +53,7 @@ class YoutubeData implements IDataSource
                 "title" => $item['snippet']['title'],
                 "publishedAt" => $item['snippet']['publishedAt'],
                 "description" => $item['snippet']['description'],
+                "imageThumbnail" => $item['snippet']['thumbnails']['default']['url'],
                 "image" => $item['snippet']['thumbnails']['medium']['url'],
                 'channelId' => $item['snippet']['channelId']
             ];
