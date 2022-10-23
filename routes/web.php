@@ -19,5 +19,6 @@ $router->get('/', function () use ($router) {
 
 $router->get('search', 'VideoController@search');
 $router->get('channelVideos', 'VideoController@channelVideos');
-
 $router->get('forceChannelYoutubeVideos', 'VideoController@forceChannelYoutubeVideos');
+
+$router->get('playlistVideos', 'VideoController@playlistVideos');

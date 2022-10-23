@@ -21,7 +21,7 @@ class VideoController extends Controller
 
         $this->source = $this->getDataSource($keyCache);
 
-        return $this->source->getVideos($searchKey, $searchValue);
+        return $this->source->videos($searchKey, $searchValue);
     }
 
     public function channelVideos(Request $request)
@@ -32,7 +32,7 @@ class VideoController extends Controller
 
         $this->source = $this->getDataSource($keyCache);
 
-        return $this->source->getVideos($searchKey, $searchValue);
+        return $this->source->videos($searchKey, $searchValue);
     }
 
     public function forceChannelYoutubeVideos(Request $request)
@@ -41,10 +41,17 @@ class VideoController extends Controller
         $searchValue = $request->input('channelId');
 
         $this->source = new YoutubeData();
-        return $this->source->getVideos($searchKey, $searchValue);
+        return $this->source->videos($searchKey, $searchValue);
     }
 
-    public function getDataSource(string $keyCache): IDataSource
+    public function playlistVideos(Request $request){
+        $playlistId = $request->input('playlistId');
+        $this->source = $this->getDataSource($playlistId);
+
+        return $this->source->playListVideos($playlistId);
+    }
+
+    private function getDataSource(string $keyCache): IDataSource
     {
         return Cache::has($keyCache) ? new LocalData() : new YoutubeData();
     }

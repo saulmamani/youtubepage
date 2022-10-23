@@ -2,6 +2,8 @@
 
 namespace App\Patterns\FactoryPattern;
 
+use App\Patterns\Decorators\PlayListMap;
+use App\Patterns\Decorators\VideoListMap;
 use App\Patterns\EnvApp;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -18,7 +20,7 @@ class YoutubeData implements IDataSource
         ]);
     }
 
-    public function getVideos($key, $q)
+    public function videos($key, $q)
     {
         $params = [
             "$key" => $q,
@@ -28,48 +30,24 @@ class YoutubeData implements IDataSource
         ];
 
         $response = $this->getHttp()->get("{$this->url}search", $params);
-        $listVideos = $this->mapResponse($response['items']);
-        $this->insertVideosInCache($key, $q, $listVideos);
+        $listVideos = VideoListMap::mapData($response['items']);
 
+        $this->insertVideosInCache("{$key}_{$q}", $listVideos);
         return $listVideos;
-    }
-
-    private function getKindId($itemId): array
-    {
-        $kind = explode("#", $itemId['kind'])[1];
-        $id = $itemId["{$kind}Id"];
-        return array($kind, $id);
-    }
-
-    private function mapResponse($items): array
-    {
-        $listVideos = [];
-        foreach ($items as $item) {
-            list($kind, $id) = $this->getKindId($item['id']);
-
-            $listVideos[] = [
-                "id" => $id,
-                "kind" => $kind,
-                "title" => $item['snippet']['title'],
-                "publishedAt" => $item['snippet']['publishedAt'],
-                "description" => $item['snippet']['description'],
-                "imageThumbnail" => $item['snippet']['thumbnails']['default']['url'],
-                "image" => $item['snippet']['thumbnails']['medium']['url'],
-                'channelId' => $item['snippet']['channelId']
-            ];
-        };
-        return $listVideos;
-    }
-
-    private function insertVideosInCache($key, $q, array $listVideos): void
-    {
-        $keyCache = "{$key}_{$q}";
-        Cache::forget($keyCache);
-        Cache::put("$keyCache", $listVideos, EnvApp::$TIME_IN_CACHE);
     }
 
     public function playListVideos($id)
     {
+        $params = [
+            "playlistId" => $id,
+            "part" => "snippet",
+            "maxResults" => "50"
+        ];
+
+        $response = $this->getHttp()->get("{$this->url}playlistItems", $params);
+        $listVideos = PlayListMap::mapData($response['items']);
+        $this->insertVideosInCache($id, $listVideos);
+        return $listVideos;
     }
 
     public function videoDetail($id)
@@ -82,5 +60,11 @@ class YoutubeData implements IDataSource
 
     public function suggestedVideos($videoId)
     {
+    }
+
+    private function insertVideosInCache($keyCache, array $listVideos): void
+    {
+        Cache::forget($keyCache);
+        Cache::put("$keyCache", $listVideos, EnvApp::$TIME_IN_CACHE);
     }
 }
