@@ -29,7 +29,6 @@ class YoutubeData implements IDataSource
 
         $response = $this->getHttp()->get("{$this->url}search", $params);
         $listVideos = $this->mapResponse($response['items']);
-
         $this->insertVideosInCache($key, $q, $listVideos);
 
         return $listVideos;
