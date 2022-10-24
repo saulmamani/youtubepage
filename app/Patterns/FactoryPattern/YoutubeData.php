@@ -34,11 +34,11 @@ class YoutubeData implements IDataSource
         $response = $this->getHttp()->get("{$this->url}search", $params);
         $listVideos = VideoListMap::mapData($response['items']);
 
-        $this->insertVideosInCache("{$key}_{$q}", $listVideos);
+        $this->insertDataInCache("{$key}_{$q}", $listVideos);
         return $listVideos;
     }
 
-    public function playListVideos($id)
+    public function playListVideos($kind, $id)
     {
         $params = [
             "playlistId" => $id,
@@ -48,11 +48,11 @@ class YoutubeData implements IDataSource
 
         $response = $this->getHttp()->get("{$this->url}playlistItems", $params);
         $listVideos = PlayListMap::mapData($response['items']);
-        $this->insertVideosInCache("playlist_$id", $listVideos);
+        $this->insertDataInCache("{$kind}_{$id}", $listVideos);
         return $listVideos;
     }
 
-    public function videoDetail($id)
+    public function videoDetail($kind, $id)
     {
         $params = [
             "id" => $id,
@@ -61,11 +61,11 @@ class YoutubeData implements IDataSource
 
         $response = $this->getHttp()->get("{$this->url}videos", $params);
         $video = VideoMap::mapData($response['items']);
-        $this->insertVideosInCache("video_$id", $video);
+        $this->insertDataInCache("{$kind}_{$id}", $video);
         return $video;
     }
 
-    public function comments($videoId)
+    public function comments($kind, $videoId)
     {
         $params = [
             "videoId" => $videoId,
@@ -77,14 +77,14 @@ class YoutubeData implements IDataSource
 
         $response = $this->getHttp()->get("{$this->url}commentThreads", $params);
         $comments = CommentMap::mapData($response['items']);
-        $this->insertVideosInCache("comments_$videoId", $comments);
+        $this->insertDataInCache("{$kind}_{$videoId}", $comments);
         return $comments;
 
     }
 
-    private function insertVideosInCache($keyCache, array $listVideos): void
+    private function insertDataInCache($keyCache, array $data): void
     {
         Cache::forget($keyCache);
-        Cache::put("$keyCache", $listVideos, EnvApp::$TIME_IN_CACHE);
+        Cache::put("$keyCache", $data, EnvApp::$TIME_IN_CACHE);
     }
 }

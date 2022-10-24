@@ -17,9 +17,8 @@ class VideoController extends Controller
     {
         $searchKey = "q";
         $searchValue = $request->input('query');
-        $keyCache = "{$searchKey}_{$searchValue}";
 
-        $this->source = $this->getDataSource($keyCache);
+        $this->source = $this->getDataSource($searchKey, $searchValue);
 
         return $this->source->videos($searchKey, $searchValue);
     }
@@ -28,9 +27,8 @@ class VideoController extends Controller
     {
         $searchKey = "channelId";
         $searchValue = $request->input('channelId');
-        $keyCache = "{$searchKey}_{$searchValue}";
 
-        $this->source = $this->getDataSource($keyCache);
+        $this->source = $this->getDataSource($searchKey, $searchValue);
 
         return $this->source->videos($searchKey, $searchValue);
     }
@@ -45,28 +43,35 @@ class VideoController extends Controller
     }
 
     public function playlistVideos(Request $request){
+        $kind = "playlistId";
         $playlistId = $request->input('playlistId');
-        $this->source = $this->getDataSource("playlist_$playlistId");
 
-        return $this->source->playListVideos($playlistId);
+        $this->source = $this->getDataSource($kind, $playlistId);
+
+        return $this->source->playListVideos($kind, $playlistId);
     }
 
     public function videoDetail(Request $request){
+        $kind = "video";
         $videoId = $request->input('videoId');
-        $this->source = $this->getDataSource("video_$videoId");
 
-        return $this->source->videoDetail($videoId);
+        $this->source = $this->getDataSource($kind, $videoId);
+
+        return $this->source->videoDetail($kind, $videoId);
     }
 
     public function comments(Request $request){
+        $kind = "comments";
         $videoId = $request->input('videoId');
-        $this->source = $this->getDataSource("comments_$videoId");
+        
+        $this->source = $this->getDataSource($kind, $videoId);
 
-        return $this->source->comments($videoId);
+        return $this->source->comments($kind, $videoId);
     }
 
-    private function getDataSource(string $keyCache): IDataSource
+    private function getDataSource(string $kind, string $value): IDataSource
     {
+        $keyCache = "{$kind}_{$value}";
         return Cache::has($keyCache) ? new LocalData() : new YoutubeData();
     }
 }
