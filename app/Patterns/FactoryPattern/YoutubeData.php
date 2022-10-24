@@ -17,7 +17,7 @@ class YoutubeData implements IDataSource
     private function getHttp(): \Illuminate\Http\Client\PendingRequest
     {
         return Http::withHeaders([
-            'X-RapidAPI-Key' => env('APP_API_KEY'),
+            'X-RapidAPI-Key' => env('APP_API_KEY', 'ea3613d5b3msh663ec4def8dea8fp1d9c00jsn0c281b455593'),
             'X-RapidAPI-Host' => 'youtube-v31.p.rapidapi.com'
         ]);
     }
