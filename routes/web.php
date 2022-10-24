@@ -14,7 +14,7 @@
 */
 
 $router->get('/', function () use ($router) {
-    return $router->app->version();
+    return ["api" => "Bridge system to Youtube app Assuresoft, (Saul Mamani)"]; 
 });
 
 $router->get('search', 'VideoController@search');
