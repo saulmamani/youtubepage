@@ -13,6 +13,15 @@ class LocalData implements IDataSource
     }
 
     public function playListVideos($id){
-        return Cache::get($id);
+        return Cache::get("playlist_$id");
+    }
+
+    public function videoDetail($id){
+        return Cache::get("video_$id");
+    }
+
+    public function comments($videoId)
+    {
+        return Cache::get("comments_$videoId");
     }
 }

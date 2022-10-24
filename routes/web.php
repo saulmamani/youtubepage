@@ -22,3 +22,5 @@ $router->get('channelVideos', 'VideoController@channelVideos');
 $router->get('forceChannelYoutubeVideos', 'VideoController@forceChannelYoutubeVideos');
 
 $router->get('playlistVideos', 'VideoController@playlistVideos');
+$router->get('videoDetail', 'VideoController@videoDetail');
+$router->get('comments', 'VideoController@comments');

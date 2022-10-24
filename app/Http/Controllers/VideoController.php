@@ -46,9 +46,23 @@ class VideoController extends Controller
 
     public function playlistVideos(Request $request){
         $playlistId = $request->input('playlistId');
-        $this->source = $this->getDataSource($playlistId);
+        $this->source = $this->getDataSource("playlist_$playlistId");
 
         return $this->source->playListVideos($playlistId);
+    }
+
+    public function videoDetail(Request $request){
+        $videoId = $request->input('videoId');
+        $this->source = $this->getDataSource("video_$videoId");
+
+        return $this->source->videoDetail($videoId);
+    }
+
+    public function comments(Request $request){
+        $videoId = $request->input('videoId');
+        $this->source = $this->getDataSource("comments_$videoId");
+
+        return $this->source->comments($videoId);
     }
 
     private function getDataSource(string $keyCache): IDataSource

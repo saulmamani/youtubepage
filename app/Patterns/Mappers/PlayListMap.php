@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Patterns\Decorators;
+namespace App\Patterns\Mappers;
 
 class PlayListMap
 {
-    public static function mapData($data){
+    public static function mapData($itens){
         $listVideos = [];
-        foreach ($data as $item) {
+        foreach ($itens as $item) {
             $kind = self::getKind($item['snippet']['resourceId']);
             $id = self::getId($item['snippet']['resourceId'], $kind);
 
