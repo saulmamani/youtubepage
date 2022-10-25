@@ -60,9 +60,13 @@ class YoutubeData implements IDataSource
         ];
 
         $response = $this->getHttp()->get("{$this->url}videos", $params);
-        $video = VideoMap::mapData($response['items']);
-        $this->insertDataInCache("{$kind}_{$id}", $video);
-        return $video;
+        if($response->status() == 200){
+            $video = VideoMap::mapData($response['items']);
+            $this->insertDataInCache("{$kind}_{$id}", $video);
+            return $video;
+        }
+
+        return [];
     }
 
     public function comments($kind, $videoId)
@@ -76,10 +80,12 @@ class YoutubeData implements IDataSource
         ];
 
         $response = $this->getHttp()->get("{$this->url}commentThreads", $params);
-        $comments = CommentMap::mapData($response['items']);
-        $this->insertDataInCache("{$kind}_{$videoId}", $comments);
-        return $comments;
-
+        if($response->status() == 200){
+            $comments = CommentMap::mapData($response['items']);
+            $this->insertDataInCache("{$kind}_{$videoId}", $comments);
+            return $comments;
+        }
+        return [];
     }
 
     private function insertDataInCache($keyCache, array $data): void
