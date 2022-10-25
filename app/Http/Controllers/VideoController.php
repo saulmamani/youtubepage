@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Patterns\EnvApp;
 use App\Patterns\FactoryPattern\IDataSource;
 use App\Patterns\FactoryPattern\LocalData;
 use App\Patterns\FactoryPattern\YoutubeData;
@@ -63,7 +62,7 @@ class VideoController extends Controller
     public function comments(Request $request){
         $kind = "comments";
         $videoId = $request->input('videoId');
-        
+
         $this->source = $this->getDataSource($kind, $videoId);
 
         return $this->source->comments($kind, $videoId);
