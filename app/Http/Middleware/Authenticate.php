@@ -35,9 +35,10 @@ class Authenticate
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        if ($this->auth->guard($guard)->guest()) {
+        $token = request()->bearerToken();
+
+        if($token !== env("APP_KEY", "543f8f6340e791a0b9a7a4e4555be1fb"))
             return response('Unauthorized.', 401);
-        }
 
         return $next($request);
     }

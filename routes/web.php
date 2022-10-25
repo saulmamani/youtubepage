@@ -14,13 +14,17 @@
 */
 
 $router->get('/', function () use ($router) {
-    return ["api" => "Bridge system to Youtube app Assuresoft, (Saul Mamani)"]; 
+    return ["api" => "Bridge system to Youtube app Assuresoft, (Saul Mamani)"];
 });
 
-$router->get('search', 'VideoController@search');
-$router->get('channelVideos', 'VideoController@channelVideos');
-$router->get('forceChannelYoutubeVideos', 'VideoController@forceChannelYoutubeVideos');
+$router->group(['middleware' => 'auth'], function () use ($router) {
 
-$router->get('playlistVideos', 'VideoController@playlistVideos');
-$router->get('videoDetail', 'VideoController@videoDetail');
-$router->get('comments', 'VideoController@comments');
+    $router->get('search', 'VideoController@search');
+    $router->get('channelVideos', 'VideoController@channelVideos');
+    $router->get('forceChannelYoutubeVideos', 'VideoController@forceChannelYoutubeVideos');
+
+    $router->get('playlistVideos', 'VideoController@playlistVideos');
+    $router->get('videoDetail', 'VideoController@videoDetail');
+    $router->get('comments', 'VideoController@comments');
+
+});
