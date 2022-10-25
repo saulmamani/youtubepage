@@ -9,6 +9,7 @@ use App\Patterns\Mappers\VideoMap;
 use App\Patterns\EnvApp;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Mockery\Exception;
 
 class YoutubeData implements IDataSource
 {
@@ -60,13 +61,13 @@ class YoutubeData implements IDataSource
         ];
 
         $response = $this->getHttp()->get("{$this->url}videos", $params);
-        if($response->status() == 200){
+        if (isset($response['items'])) {
             $video = VideoMap::mapData($response['items']);
             $this->insertDataInCache("{$kind}_{$id}", $video);
             return $video;
         }
 
-        return [];
+        $this->throwExeption($response['error']);
     }
 
     public function comments($kind, $videoId)
@@ -80,12 +81,23 @@ class YoutubeData implements IDataSource
         ];
 
         $response = $this->getHttp()->get("{$this->url}commentThreads", $params);
-        if($response->status() == 200){
+        if (isset($response['items'])) {
+            error_log("no deberia entrar");
             $comments = CommentMap::mapData($response['items']);
             $this->insertDataInCache("{$kind}_{$videoId}", $comments);
             return $comments;
         }
-        return [];
+
+        $this->throwExeption($response['error']);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function throwExeption($error1)
+    {
+        $error = $error1;
+        throw new \Exception($error['message'], $error['code']);
     }
 
     private function insertDataInCache($keyCache, array $data): void
