@@ -5,21 +5,25 @@ namespace App\Http\Controllers;
 use App\Patterns\FactoryPattern\IDataSource;
 use App\Patterns\FactoryPattern\LocalData;
 use App\Patterns\FactoryPattern\YoutubeData;
+use App\Patterns\FactoryPattern\DataFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class VideoController extends Controller
 {
-    protected IDataSource $source;
+    protected DataFactory $dataFactory;
+    public function __construct(DataFactory $dataFactory){
+        $this->dataFactory = $dataFactory;
+    }
 
     public function search(Request $request)
     {
         $searchKey = "q";
         $searchValue = $request->input('query');
 
-        $this->source = $this->getDataSource($searchKey, $searchValue);
+        $source = $this->dataFactory->getDataSource($searchKey, $searchValue);
 
-        return $this->source->videos($searchKey, $searchValue);
+        return $source->videos($searchKey, $searchValue);
     }
 
     public function channelVideos(Request $request)
@@ -27,9 +31,9 @@ class VideoController extends Controller
         $searchKey = "channelId";
         $searchValue = $request->input('channelId');
 
-        $this->source = $this->getDataSource($searchKey, $searchValue);
+        $source = $this->dataFactory->getDataSource($searchKey, $searchValue);
 
-        return $this->source->videos($searchKey, $searchValue);
+        return $source->videos($searchKey, $searchValue);
     }
 
     public function forceChannelYoutubeVideos(Request $request)
@@ -37,40 +41,34 @@ class VideoController extends Controller
         $searchKey = "channelId";
         $searchValue = $request->input('channelId');
 
-        $this->source = new YoutubeData();
-        return $this->source->videos($searchKey, $searchValue);
+        $source = new YoutubeData();
+        return $source->videos($searchKey, $searchValue);
     }
 
     public function playlistVideos(Request $request){
         $kind = "playlistId";
         $playlistId = $request->input('playlistId');
 
-        $this->source = $this->getDataSource($kind, $playlistId);
+        $source = $this->dataFactory->getDataSource($kind, $playlistId);
 
-        return $this->source->playListVideos($kind, $playlistId);
+        return $source->playListVideos($kind, $playlistId);
     }
 
     public function videoDetail(Request $request){
         $kind = "video";
         $videoId = $request->input('videoId');
 
-        $this->source = $this->getDataSource($kind, $videoId);
+        $source = $this->dataFactory->getDataSource($kind, $videoId);
 
-        return $this->source->videoDetail($kind, $videoId);
+        return $source->videoDetail($kind, $videoId);
     }
 
     public function comments(Request $request){
         $kind = "comments";
         $videoId = $request->input('videoId');
 
-        $this->source = $this->getDataSource($kind, $videoId);
+        $source = $this->dataFactory->getDataSource($kind, $videoId);
 
-        return $this->source->comments($kind, $videoId);
-    }
-
-    private function getDataSource(string $kind, string $value): IDataSource
-    {
-        $keyCache = "{$kind}_{$value}";
-        return Cache::has($keyCache) ? new LocalData() : new YoutubeData();
+        return $source->comments($kind, $videoId);
     }
 }
