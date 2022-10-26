@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Patterns\FactoryPattern\IDataSource;
 use App\Patterns\FactoryPattern\YoutubeData;
 use App\Patterns\FactoryPattern\DataFactory;
 use Illuminate\Http\Request;

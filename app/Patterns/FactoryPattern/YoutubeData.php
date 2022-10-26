@@ -9,11 +9,10 @@ use App\Patterns\Mappers\VideoMap;
 use App\Patterns\EnvApp;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use Mockery\Exception;
 
 class YoutubeData implements IDataSource
 {
-    private $url = "https://youtube-v31.p.rapidapi.com/";
+    private string $url = "https://youtube-v31.p.rapidapi.com/";
 
     private function getHttp(): \Illuminate\Http\Client\PendingRequest
     {
@@ -29,7 +28,7 @@ class YoutubeData implements IDataSource
             "$key" => $q,
             "part" => "snippet,id",
             "regionCode" => "BO",
-            "maxResults" => "50"
+            "maxResults" => "100"
         ];
 
         $response = $this->getHttp()->get("{$this->url}search", $params);
@@ -44,7 +43,7 @@ class YoutubeData implements IDataSource
         $params = [
             "playlistId" => $id,
             "part" => "snippet",
-            "maxResults" => "50"
+            "maxResults" => "100"
         ];
 
         $response = $this->getHttp()->get("{$this->url}playlistItems", $params);
