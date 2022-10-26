@@ -2,6 +2,8 @@
 
 namespace App\Patterns\FactoryPattern;
 
+use Illuminate\Support\Facades\Cache;
+
 class DataFactory {
     public function getDataSource(string $kind, string $value): IDataSource
     {

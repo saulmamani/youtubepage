@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Patterns\FactoryPattern\IDataSource;
-use App\Patterns\FactoryPattern\LocalData;
 use App\Patterns\FactoryPattern\YoutubeData;
 use App\Patterns\FactoryPattern\DataFactory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 
 class VideoController extends Controller
 {
