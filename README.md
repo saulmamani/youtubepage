@@ -1,24 +1,100 @@
-# Lumen PHP Framework
+## DOCUMENTACIÓN DEL SISTEMA
 
-[![Build Status](https://travis-ci.org/laravel/lumen-framework.svg)](https://travis-ci.org/laravel/lumen-framework)
-[![Total Downloads](https://img.shields.io/packagist/dt/laravel/lumen-framework)](https://packagist.org/packages/laravel/lumen-framework)
-[![Latest Stable Version](https://img.shields.io/packagist/v/laravel/lumen-framework)](https://packagist.org/packages/laravel/lumen-framework)
-[![License](https://img.shields.io/packagist/l/laravel/lumen)](https://packagist.org/packages/laravel/lumen-framework)
+© Saul Mamani M.  
++591 76137269  
+[https://saulmamani.github.io](https://saulmamani.github.io/)
 
-Laravel Lumen is a stunningly fast PHP micro-framework for building web applications with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Lumen attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as routing, database abstraction, queueing, and caching.
+##### Demo: [https://yourubeapp.000webhostapp.com](https://yourubeapp.000webhostapp.com/)
 
-## Official Documentation
+---
 
-Documentation for the framework can be found on the [Lumen website](https://lumen.laravel.com/docs).
+En el presente documento se muestra las **desciciones tomadas** sobre la arquitectura y diseño del sistema.
 
-## Contributing
+## Arquitectura del sistema
 
-Thank you for considering contributing to Lumen! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+El sistema “Bridge” se comunica con el servidor RapidApi para  recoger los datos, estos datos son procesados (mapeados) por el sistema “Bridge” y publicados en servicios REST para que el sistema Frontend los pueda utilizar. Los usuarios solamente interactuan con el sistema Frontend.
 
-## Security Vulnerabilities
+Para que el "Bridge" pueda consumir los servicios de RapidApi, este necesita enviar las solicitudes con Token (X-RapidAPI-Key).
 
-If you discover a security vulnerability within Lumen, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
+Para que el sistema Frontend pueda consumir los servicios brindados por el “Bridge”, debe enviar las solicitudes con un token del tipo Bearer (api\_token) 
 
-## License
+![](https://yourubeapp.000webhostapp.com/documents/Arquitectura.png)
 
-The Lumen framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+*   Sistema Backend “Bridge” 
+    *   Lenguaje de programación **PHP 8**
+    *   **Lumen 8** como microframework Laravel
+    *   Para almacenar información en **caché**, se utiliza **File caché**, intregrado en Lumen
+*   Sistema Frontend “Web App”
+    *   Lenguaje de programación **Javascript** y **TypeScript**
+    *   **Vuejs 2** como framework JS
+    *   **Vuetify** para el diseño de las interfaces de usuario
+    *   **Pinia,** para manejar el **Store** de Vuejs
+    *   **Axios Observable**, para las solicitudes **http** al sistema bridge 
+
+## Diseño del sistema en el Backend
+
+Se tomarón las siguientes  desciciones:
+
+**Patrón de diseño “Factory Method”**
+
+Para recuperar los datos desde el servicio de youtube (RapidApi), o desde el **Cache File** de la aplicación (con duración de dos horas) se ha visto por conveniente implementar el patron de diseñon **Factory Method**. 
+
+![](https://yourubeapp.000webhostapp.com/documents/FactoryMethod.png)
+
+*   **IDataSource**: Interfaz que van a implementer todas las clases que tiene acceso a los datos
+*   **YoutubeData**: Clase que se cumunica con el servidor de **RapidApi** para recoger los datos y luego mapearlos. Una vez mapedo los datos mas importantes, éstos son almacenados en Cache File, con una duración de dos horas.
+*   **LocalData**:  Clase que recoge la información solicitada desde el Cache File.
+*   **DataFactory**:  Clase encargada de recoger los datos, ya sea desde el servidor RapidApi o desde el Cache File.
+*   **VideoController**: Clase controlador que implementa el patrón y publica los servicios API REST por medio de las rutas 
+
+Además la clase **YoutubeData** usa las clases Mappers, para mapear los datos con la información necesaria para el Frontend.
+
+![](https://yourubeapp.000webhostapp.com/documents/Mappers.png)
+
+**Mecanismos de seguridad Backend**
+
+Para que el "Bridge" pueda consumir los servicios de RapidApi, este necesita enviar las solicitudes con Token (X-RapidAPI-Key).
+
+Para que el sistema Frontend pueda consumir los servicios brindados por el “Bridge”, debe enviar las solicitudes con un token del tipo Bearer (api\_token). Estos tokens, se los registrar en el archivo de configuración “**.env**” de Lumen. 
+
+```plaintext
+APP_NAME=YoutubeApp
+APP_ENV=local
+APP_KEY=543f8f6340e791a0b9a7a4e4555be1fb   ## Token de Lumen para proteger las rotas de Lumen
+APP_DEBUG=true
+APP_URL=http://localhost
+APP_TIMEZONE=America/La_Paz
+
+CACHE_DRIVER=file
+QUEUE_CONNECTION=sync
+
+APP_API_KEY=ea3613d5b3msh663ec4def8dea8fp1d9c00jsn0c281b455593  ## Token para consumer los servicios de RapidApi
+
+```
+
+## Diseño del sistema en el Frontend
+
+Para el desarrollo del Frontend, se ha utilizado Vuejs y TypeScript.
+
+El proyecto tiene la siguiente organización de carpetas. 
+
+*   /config: Axios para el consumo de servicios REST ofrecidos por el sistema “Bridge”
+*   /models: Clases de los Modelos 
+*   /services: Lógica de la aplicación
+*   /views: Interfaces de usuario
+
+**Mecanismos de seguridad Frontend**
+
+```plaintext
+VUE_APP_URL=https://youtubeassureapp.herokuapp.com  ## URL del backend
+VUE_APP_API_KEY=543f8f6340e791a0b9a7a4e4555be1fb    ## API_KEY Para consumir los servicios del sistema "Bridge"  
+```
+
+## Recomendaciones
+
+*   Para almacenar el cache local, se recomienda utilizar una base de datos en memoria mas robusta como **REDIS** 
+*   La autenticacion (api\_token) en el sistema “Bridge” es estática (Se hizo de esta manera por comodidad, ya que el sistema Bridge, no usa base de datos). Se recomienda autenticación con base de datos SQL. 
+
+**Demo:**
+
+[**https://yourubeapp.000webhostapp.com**](https://yourubeapp.000webhostapp.com)
