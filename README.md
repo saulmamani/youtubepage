@@ -60,7 +60,7 @@ Para que el sistema Frontend pueda consumir los servicios brindados por el “Br
 ```plaintext
 APP_NAME=YoutubeApp
 APP_ENV=local
-APP_KEY=543f8f6340e791a0b9a7a4e4555be1fb   ## Token de Lumen para proteger las rotas de Lumen
+APP_KEY=xxxxxx   ## Token de Lumen para proteger las rotas de Lumen
 APP_DEBUG=true
 APP_URL=http://localhost
 APP_TIMEZONE=America/La_Paz
@@ -68,7 +68,7 @@ APP_TIMEZONE=America/La_Paz
 CACHE_DRIVER=file
 QUEUE_CONNECTION=sync
 
-APP_API_KEY=ea3613d5b3msh663ec4def8dea8fp1d9c00jsn0c281b455593  ## Token para consumer los servicios de RapidApi
+APP_API_KEY=xxxxxx  ## Token para consumer los servicios de RapidApi
 
 ```
 
@@ -87,7 +87,7 @@ El proyecto tiene la siguiente organización de carpetas. 
 
 ```plaintext
 VUE_APP_URL=https://youtubeassureapp.herokuapp.com  ## URL del backend
-VUE_APP_API_KEY=543f8f6340e791a0b9a7a4e4555be1fb    ## API_KEY Para consumir los servicios del sistema "Bridge"  
+VUE_APP_API_KEY=xxxxxx    ## API_KEY Para consumir los servicios del sistema "Bridge"  
 ```
 
 ## Recomendaciones
