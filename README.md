@@ -41,11 +41,11 @@ Para recuperar los datos desde el servicio de youtube (RapidApi), o desde el **C
 
 ![](https://yourubeapp.000webhostapp.com/documents/FactoryMethod.png)
 
-*   **IDataSource**: Interfaz que van a implementer todas las clases que tiene acceso a los datos
-*   **YoutubeData**: Clase que se cumunica con el servidor de **RapidApi** para recoger los datos y luego mapearlos. Una vez mapedo los datos mas importantes, éstos son almacenados en Cache File, con una duración de dos horas.
-*   **LocalData**:  Clase que recoge la información solicitada desde el Cache File.
-*   **DataFactory**:  Clase encargada de recoger los datos, ya sea desde el servidor RapidApi o desde el Cache File.
-*   **VideoController**: Clase controlador que implementa el patrón y publica los servicios API REST por medio de las rutas 
+*   **/app/Patterns/FactoryPattern/IDataSource**: Interfaz que van a implementer todas las clases que tiene acceso a los datos
+*   **/app/Patterns/FactoryPattern/YoutubeData**: Clase que se cumunica con el servidor de **RapidApi** para recoger los datos y luego mapearlos. Una vez mapedo los datos mas importantes, éstos son almacenados en Cache File, con una duración de dos horas.
+*   **/app/Patterns/FactoryPattern/LocalData**:  Clase que recoge la información solicitada desde el Cache File.
+*   **/app/Patterns/FactoryPattern/DataFactory**:  Clase encargada de recoger los datos, ya sea desde el servidor RapidApi o desde el Cache File.
+*   **/app/Http/Controllers/VideoController**: Clase controlador que implementa el patrón y publica los servicios API REST por medio de las rutas 
 
 Además la clase **YoutubeData** usa las clases Mappers, para mapear los datos con la información necesaria para el Frontend.
 
